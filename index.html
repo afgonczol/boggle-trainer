@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Boggle Trainer</title>
+<meta name="theme-color" content="#2b6cb0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Boggle Trainer</h1>
+  <div id="who">
+    <select id="profileSel" title="Profile"></select>
+    <label class="practiceLbl" title="Games played in practice mode don't change your stats"><input type="checkbox" id="practiceToggle"> 🕶 Practice</label>
+  </div>
+  <nav id="tabs">
+    <button data-tab="play" class="on">Play</button>
+    <button data-tab="learn">Learn</button>
+    <button data-tab="stats">Stats</button>
+    <button data-tab="tools">Tools</button>
+  </nav>
+</header>
+
+<main>
+<section id="tab-play">
+  <div id="setup" class="card">
+    <div class="row">
+      <label>Board <select id="optSize"><option value="4">4×4</option><option value="5">5×5</option><option value="6">6×6</option></select></label>
+      <label>Time <select id="optTime"><option value="60">1:00</option><option value="90">1:30</option><option value="120">2:00</option><option value="180">3:00</option><option value="300">5:00</option></select></label>
+      <label>Min length <select id="optMin"><option>3</option><option>4</option><option>5</option></select></label>
+    </div>
+    <div class="row"><label>Board richness <select id="optQuality"><option value="any">Any (raw dice)</option><option value="good">Good (skip sparse boards)</option><option value="rich">Rich (above-median boards)</option></select></label></div>
+    <label class="chk"><input type="checkbox" id="optSmart"> Smart board (pick boards containing words from my Learn list)</label>
+    <label class="chk"><input type="checkbox" id="optSound"> Sound effects</label>
+    <button id="btnStart" class="big">Start game</button>
+  </div>
+
+  <div id="game" hidden>
+    <div class="hud"><span id="hudScore">0 pts</span><span id="hudCount">0 words</span><span id="hudTime">0:00</span></div>
+    <div id="timebar"><div></div></div>
+    <div id="current">&nbsp;</div>
+    <div class="undoRow"><button id="undoRej" class="ghost" hidden></button></div>
+    <div id="boardWrap"><div id="board"></div><svg id="trail"></svg></div>
+    <div id="foundList"></div>
+    <button id="btnEnd" class="ghost">End game</button>
+  </div>
+
+  <div id="results" hidden></div>
+</section>
+
+<section id="tab-learn" hidden></section>
+<section id="tab-stats" hidden></section>
+
+<section id="tab-tools" hidden>
+  <div class="card">
+    <h2>Enter a Netflix board</h2>
+    <p class="muted">Type the letters row by row (Q = Qu tile). Then play it here, or log which words you found on Netflix.</p>
+    <div class="row">
+      <label>Size <select id="nfSize"><option value="4">4×4</option><option value="5">5×5</option><option value="6">6×6</option></select></label>
+    </div>
+    <textarea id="nfLetters" rows="3" placeholder="e.g. tbsa einr oepl ghmu"></textarea>
+    <div class="row">
+      <button id="nfPlay">Play this board</button>
+      <button id="nfLog" class="ghost">Log my Netflix result</button>
+    </div>
+    <div id="nfMsg" class="muted"></div>
+    <div id="nfOut"></div>
+  </div>
+
+  <div class="card">
+    <h2>Profiles</h2>
+    <p class="muted">Each profile has its own stats, history and settings, stored on this device. Switch profiles from the header.</p>
+    <div class="row">
+      <button id="profNew" class="ghost">New profile</button>
+      <button id="profRename" class="ghost">Rename current</button>
+      <button id="profDelete" class="ghost danger">Delete current</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Dictionary</h2>
+    <p class="muted">Base list: ENABLE (172k words). If Netflix rejects a word we accept (or accepts one we don't), fix it here.</p>
+    <div class="row">
+      <input id="dictWord" placeholder="word">
+      <button id="dictBan" class="ghost">Netflix rejects it</button>
+      <button id="dictAdd" class="ghost">Netflix accepts it</button>
+    </div>
+    <div id="dictLists" class="muted"></div>
+  </div>
+
+  <div class="card">
+    <h2>Data</h2>
+    <div class="row">
+      <button id="btnExport" class="ghost">Export JSON</button>
+      <label class="btn ghost">Import JSON<input type="file" id="fileImport" accept=".json" hidden></label>
+      <button id="btnReset" class="ghost danger">Reset all stats</button>
+    </div>
+  </div>
+</section>
+</main>
+<script src="words.js"></script>
+<script src="roots.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
