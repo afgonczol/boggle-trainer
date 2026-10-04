@@ -573,6 +573,65 @@ function initTools() {
   $('#btnReset').onclick = () => { if (confirm('Delete all stats and game history?')) { stats = {}; games = []; rejects = {}; store.set('rejects', rejects); saveStats(); store.set('games', games); } };
 }
 
+// ---------- simulator ----------
+// Generates boards exactly like the game does and counts how many boards each word (and word family) appears on.
+let sim = null, simView = 'words';
+function simRows() {
+  const src = simView === 'words' ? sim.words : sim.fams;
+  return [...src.entries()].sort((a, b) => b[1] - a[1] || b[0].length - a[0].length).slice(0, 150);
+}
+function renderSimResults() {
+  const el = $('#simOut');
+  if (!sim) { el.innerHTML = ''; return; }
+  const n = sim.done, pct = c => (100 * c / n).toFixed(1) + '%';
+  const rows = simRows();
+  const lens = Object.entries(sim.byLen).sort((a, b) => a[0] - b[0]).map(([l, c]) => `<tr><td>${l >= 8 ? '8+' : l}</td><td class="n">${(c / n).toFixed(1)}</td></tr>`).join('');
+  const body = simView === 'words'
+    ? `<tr><th>Word</th><th class="n">Len</th><th class="n">Boards</th><th class="n">Chance</th><th class="n">Your find rate</th></tr>` + rows.map(([w, c]) => {
+        const e = stats[w];
+        return `<tr class="lw" data-w="${w}"><td><b>${w}</b></td><td class="n">${w.length}</td><td class="n">${c}</td><td class="n">${pct(c)}</td><td class="n fam">${e ? Math.round(100 * e[1] / e[0]) + '% of ' + e[0] : '—'}</td></tr>`;
+      }).join('')
+    : `<tr><th>Family root</th><th>Family forms</th><th class="n">Boards</th><th class="n">Chance</th></tr>` + rows.map(([r, c]) => {
+        const g = (members.get(r) || []).slice(0, 6).join(', ');
+        return `<tr class="lw" data-w="${r}"><td><b>${r}</b></td><td class="fam">${g}${(members.get(r) || []).length > 6 ? ', …' : ''}</td><td class="n">${c}</td><td class="n">${pct(c)}</td></tr>`;
+      }).join('');
+  el.innerHTML = `<div class="card"><h2>${n.toLocaleString()} ${sim.size}×${sim.size} boards${sim.done < sim.total ? ' (stopped early)' : ''}</h2>
+    <p class="muted">Average ${(sim.totalWords / n).toFixed(0)} words per board (min length ${sim.min}), ${sim.words.size.toLocaleString()} distinct words seen. “Chance” is the share of boards the word appears on at least once.</p>
+    <details><summary>Average words per board by length</summary><table style="max-width:260px"><tr><th>Length</th><th class="n">Words</th></tr>${lens}</table></details></div>
+    <div class="card"><div class="tabs2"><button data-sv="words" class="${simView === 'words' ? 'on' : ''}">Words</button><button data-sv="fams" class="${simView === 'fams' ? 'on' : ''}">Families</button></div>
+    <table>${body}</table></div>`;
+  $$('#simOut [data-sv]').forEach(b => b.onclick = () => { simView = b.dataset.sv; renderSimResults(); });
+  $$('#simOut [data-w]').forEach(r => r.onclick = () => showDef(r.dataset.w));
+}
+let simStop = false;
+function runSim() {
+  const size = +$('#simSize').value, total = Math.max(1, Math.min(20000, +$('#simRuns').value || 1000)), min = +$('#simMin').value;
+  sim = { size, total, min, done: 0, words: new Map(), fams: new Map(), byLen: {}, totalWords: 0 };
+  simStop = false;
+  $('#simGo').hidden = true; $('#simStop').hidden = false;
+  const step = () => {
+    const t0 = performance.now();
+    while (sim.done < total && !simStop && performance.now() - t0 < 40) {
+      const sol = solve(richBoard(size), size, min), roots = new Set();
+      for (const w of sol) {
+        sim.words.set(w, (sim.words.get(w) || 0) + 1);
+        roots.add(family(w).root);
+        const L = Math.min(w.length, 8); sim.byLen[L] = (sim.byLen[L] || 0) + 1;
+      }
+      for (const r of roots) sim.fams.set(r, (sim.fams.get(r) || 0) + 1);
+      sim.totalWords += sol.size; sim.done++;
+    }
+    $('#simProg').textContent = `${sim.done} / ${total}`;
+    if (sim.done < total && !simStop) { setTimeout(step, 0); if (sim.done % 100 < 5) renderSimResults(); }
+    else { $('#simGo').hidden = false; $('#simStop').hidden = true; $('#simProg').textContent = ''; renderSimResults(); }
+  };
+  step();
+}
+function initSim() {
+  $('#simGo').onclick = runSim;
+  $('#simStop').onclick = () => { simStop = true; };
+}
+
 // ---------- tabs / setup ----------
 function switchTab(t) {
   $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
@@ -623,7 +682,7 @@ function init() {
     startGame();
   };
   $('#btnEnd').onclick = () => { if (confirm('End this game now?')) endGame(); };
-  initSwipe(); initTools();
+  initSwipe(); initTools(); initSim();
   window.addEventListener('resize', () => { if (G && !G.over) drawPath(); });
   window.__bt = { solve: (t, n, m) => solve(t, n, m || 3), family, dict: () => dict, stats: () => stats };
 }

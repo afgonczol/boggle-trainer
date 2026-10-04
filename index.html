@@ -23,6 +23,7 @@
     <button data-tab="play" class="on">Play</button>
     <button data-tab="learn">Learn</button>
     <button data-tab="stats">Stats</button>
+    <button data-tab="sim">Simulate</button>
     <button data-tab="tools">Tools</button>
   </nav>
 </header>
@@ -56,6 +57,20 @@
 
 <section id="tab-learn" hidden></section>
 <section id="tab-stats" hidden></section>
+
+<section id="tab-sim" hidden>
+  <div class="card">
+    <h2>Which words show up most?</h2>
+    <p class="muted">Generates random boards the same way the game does (using your Board richness setting), solves each one, and counts how many boards every word appears on. Nothing here touches your stats.</p>
+    <div class="row">
+      <label>Board <select id="simSize"><option value="4">4×4</option><option value="5">5×5</option><option value="6">6×6</option></select></label>
+      <label>Boards <input id="simRuns" type="number" min="1" max="20000" value="1000" style="width:90px"></label>
+      <label>Min length <select id="simMin"><option>3</option><option>4</option><option>5</option></select></label>
+    </div>
+    <div class="row"><button id="simGo">Run simulation</button><button id="simStop" class="ghost" hidden>Stop</button><span id="simProg" class="muted"></span></div>
+  </div>
+  <div id="simOut"></div>
+</section>
 
 <section id="tab-tools" hidden>
   <div class="card">
