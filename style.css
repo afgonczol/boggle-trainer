@@ -61,6 +61,8 @@ tr.lw{cursor:pointer}tr.lw:hover{background:var(--bg)}
 button.x{padding:0 6px;font-size:12px;border-radius:10px;margin-left:2px}
 .gram{font-size:18px;letter-spacing:1px;text-transform:uppercase}
 [hidden]{display:none!important}
+#howto ol{padding-left:20px;margin:8px 0}#howto li{margin-bottom:6px}
+nav #helpBtn{border:1px solid var(--muted);border-radius:50%;width:26px;height:26px;padding:0;margin-left:6px;font-size:14px}
 #who{display:flex;gap:10px;align-items:center;margin-left:auto}
 #who select{max-width:130px}
 .practiceLbl{font-size:14px;white-space:nowrap;cursor:pointer}

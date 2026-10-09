@@ -673,7 +673,12 @@ function init() {
   buildDict();
   initProfiles();
   if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
-  $$('#tabs button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+  $$('#tabs button[data-tab]').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+  const howto = $('#howto');
+  let seen = false; try { seen = !!localStorage.getItem('bt.seenHowto'); } catch (e) { /* ignore */ }
+  howto.hidden = seen;
+  $('#howtoClose').onclick = () => { howto.hidden = true; try { localStorage.setItem('bt.seenHowto', '1'); } catch (e) { /* ignore */ } };
+  $('#helpBtn').onclick = () => { switchTab('play'); howto.hidden = !howto.hidden; if (!howto.hidden) howto.scrollIntoView(); };
   $('#optSize').value = settings.size; $('#optTime').value = settings.time; $('#optMin').value = settings.min; $('#optSmart').checked = settings.smart; $('#optSound').checked = settings.sound; $('#optQuality').value = settings.quality;
   document.addEventListener('pointerdown', () => { if (settings.sound && !actx) sfx('init'); }, { once: true });
   $('#btnStart').onclick = () => {
