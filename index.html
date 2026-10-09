@@ -25,11 +25,25 @@
     <button data-tab="stats">Stats</button>
     <button data-tab="sim">Simulate</button>
     <button data-tab="tools">Tools</button>
+    <button id="helpBtn" title="How to use this app" aria-label="Help">?</button>
   </nav>
 </header>
 
 <main>
 <section id="tab-play">
+  <div id="howto" class="card" hidden>
+    <h2>Welcome! How this works</h2>
+    <p class="muted">Boggle Trainer helps you get better at word-finding boards (like the Netflix Boggle game) by tracking which words you find and which you miss.</p>
+    <ol>
+      <li><b>Play:</b> pick a board size and time, then press <i>Start game</i>. Swipe your finger (or drag the mouse) across <b>touching letters</b> &ndash; including diagonals &ndash; to spell a word. Lift to submit. Each tile can be used once per word.</li>
+      <li><b>Results:</b> when time is up you'll see every word on the board, the ones you found, and the ones you missed. Tap any word for its definition.</li>
+      <li><b>Learn:</b> missed words are collected in the <i>Learn</i> tab, along with word families, patterns and letter combos, so you can study the words you keep missing. Turn on <i>Smart board</i> to get boards containing those words.</li>
+      <li><b>Stats:</b> see your progress over time. Invalid swipes are saved under <i>Rejected</i> (tap &#10005; if it was just a misswipe).</li>
+      <li><b>Simulate / Tools:</b> find out which words appear most often, enter a board from Netflix to play or log it, and manage profiles and data.</li>
+    </ol>
+    <p class="muted">Tip: <i>Practice</i> (top right) lets you play without affecting your stats. Everything is stored on this device only.</p>
+    <button id="howtoClose">Got it</button>
+  </div>
   <div id="setup" class="card">
     <div class="row">
       <label>Board <select id="optSize"><option value="4">4×4</option><option value="5">5×5</option><option value="6">6×6</option></select></label>
